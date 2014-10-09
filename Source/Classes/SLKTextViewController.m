@@ -822,10 +822,117 @@
 
 
 
+- (CGRect) getVirtualKeyboardFrame{
+    CGRect rc = [[UIScreen mainScreen] bounds];
+    CGRect r = rc;
+    UIInterfaceOrientation toInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    NSLog(@"%@", [self NSStringFromUIInterfaceOrientation:toInterfaceOrientation]);
+    
+    if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+        
+        r.size.width = rc.size.width;
+        r.size.height = [self virtualKeyboardHight];
+        r.origin.x = 0;
+        r.origin.y = rc.size.height - [self virtualKeyboardHight];
+        
+        
+    } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+        
+        r.size.width = [self virtualKeyboardHight];
+        r.size.height = rc.size.height;
+        r.origin.x = rc.size.width - [self virtualKeyboardHight];
+        r.origin.y = 0;
+        
+    } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+        
+        r.size.width = [self virtualKeyboardHight];
+        r.size.height = rc.size.height;
+        r.origin.x = 0;
+        r.origin.y = 0;
+        
+        
+    } else  { //UIInterfaceOrientationPortraitUpsideDown
+        r.size.width = rc.size.width;;
+        r.size.height =  [self virtualKeyboardHight];
+        r.origin.x = 0;
+        r.origin.y = 0;
+    }
+    
+    return r;
+}
 
 
 
 /////// by khan
+
+- (void) retateVirtualKeyboardToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation{
+//    if (self.isVKeyboardShow) {
+//        
+//        //先判断是否有效转向
+//        if( UIDeviceOrientationIsValidInterfaceOrientation( toInterfaceOrientation ) ) {
+//            
+////            BOOL isStatusBarHidden = [[ UIApplication sharedApplication ]isStatusBarHidden ];
+////            BOOL isHorz = UIInterfaceOrientationIsLandscape( toInterfaceOrientation);
+////            CGRect rc = [[UIScreen mainScreen] bounds];
+////            CGRect r = rc;
+//            
+////            int status_height = isStatusBarHidden ? 0 : 20;
+//            
+//            if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+//                CGAffineTransform at = CGAffineTransformMakeRotation(M_PI);
+////                at = CGAffineTransformTranslate(at, 200, 0);
+//                [self.virtualKeyboard setTransform:at];
+//                
+////                CGRect r = [self getVirtualKeyboardFrame];
+////                NSLog(@"%@", NSStringFromCGRect(r));
+////                [self.virtualKeyboard setFrame:r];
+//                
+//            } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+//                
+//                CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI/2);
+////                at = CGAffineTransformTranslate(at, 200, 0);
+//                [self.virtualKeyboard setTransform:at];
+//                
+////                CGRect r = [self getVirtualKeyboardFrame];
+////                NSLog(@"%@", NSStringFromCGRect(r));
+////                [self.virtualKeyboard setFrame:r];
+//
+//            } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+//            
+//                CGAffineTransform at = CGAffineTransformMakeRotation(M_PI/2);
+////                at = CGAffineTransformTranslate(at, 200, 0);
+//                [self.virtualKeyboard setTransform:at];
+//                
+////                CGRect r = [self getVirtualKeyboardFrame];
+////                NSLog(@"%@", NSStringFromCGRect(r));
+////                [self.virtualKeyboard setFrame:r];
+//                
+//                
+//            } else  { //UIInterfaceOrientationPortraitUpsideDown
+//                
+//                CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI);
+////                at = CGAffineTransformTranslate(at, 200, 0);
+//                [self.virtualKeyboard setTransform:at];
+//            
+////                CGRect r = [self getVirtualKeyboardFrame];
+////                NSLog(@"%@", NSStringFromCGRect(r));
+////                [self.virtualKeyboard setFrame:r];
+//            }
+//        }
+//        
+//    }
+}
+
+- (NSString * )NSStringFromUIInterfaceOrientation: (UIInterfaceOrientation) orientation {
+    switch ( (NSInteger)orientation ) {
+        case UIInterfaceOrientationPortrait:           return @"UIInterfaceOrientationPortrait";
+        case UIInterfaceOrientationPortraitUpsideDown: return @"UIInterfaceOrientationPortraitUpsideDown";
+        case UIInterfaceOrientationLandscapeLeft:      return @"UIInterfaceOrientationLandscapeLeft";
+        case UIInterfaceOrientationLandscapeRight:     return @"UIInterfaceOrientationLandscapeRight";
+    }
+    return @"Unexpected";
+}
 
 - (UIWindow *) getMainWindow {
     for (UIView *view = self.view; view; view = view.superview) {
@@ -843,7 +950,9 @@
 - (void) virtualkeyboardWillDissmis{}
 - (void) virtualkeyboardDidDissmis{}
 
-- (void) showVirtualKeyboard{
+
+
+- (void) showVirtualKeyboard4iOS8Later{
     if (self.isVKeyboardShow) {
         return;
     }
@@ -852,11 +961,10 @@
     UIWindow *window = [self getMainWindow];
     if (window != nil) {
         [self virtualkeyboardWillShow];
-        __block CGRect r = [[UIScreen mainScreen] applicationFrame];
-        CGFloat yoffset = [UIApplication sharedApplication].statusBarFrame.size.height;
+        __block CGRect r = [[UIScreen mainScreen] bounds];
         
-        CGFloat y1 = r.size.height - [self virtualKeyboardHight] + yoffset;
-        CGFloat y2 = r.size.height + yoffset;
+        CGFloat y1 = r.size.height - [self virtualKeyboardHight] ;
+        CGFloat y2 = r.size.height ;
         r.size.height = [self virtualKeyboardHight];
         r.origin.y = y2;
         [self.virtualKeyboard setFrame:r];
@@ -879,10 +987,185 @@
         
         
     }
+}
+
+- (void) showVirtualKeyboard4iOS8Befor{
+    if (self.isVKeyboardShow) {
+        return;
+    }
+    
+    
+    UIWindow *window = [self getMainWindow];
+    if (window != nil) {
+        [self virtualkeyboardWillShow];
+        
+        __block CGRect r = [self getVirtualKeyboardFrame];
+        CGRect rc = [[UIScreen mainScreen] bounds];
+        UIInterfaceOrientation toInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        
+        CGFloat y1 = 0,  y2 = 0;
+        CGFloat x1 = 0,  x2 = 0;
+        
+        if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+            CGAffineTransform at = CGAffineTransformMakeRotation(M_PI);
+            [self.virtualKeyboard setTransform:at];
+            
+            y1 = r.origin.y;
+            y2 = rc.size.height;
+            r.origin.y = y2;
+        } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+            CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI/2);
+            [self.virtualKeyboard setTransform:at];
+            
+            x1 = r.origin.x;
+            x2 = rc.size.width;
+            r.origin.x = x2;
+            
+        } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+            CGAffineTransform at = CGAffineTransformMakeRotation(M_PI/2);
+            [self.virtualKeyboard setTransform:at];
+            
+            x1 = r.origin.x;
+            x2 = 0 - rc.size.width;
+            r.origin.x = x2;
+            
+        } else  { //UIInterfaceOrientationPortraitUpsideDown
+            CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI);
+            [self.virtualKeyboard setTransform:at];
+            
+            y1 = r.origin.y;
+            y2 = 0 - r.size.height;
+            r.origin.y = y2;
+        }
+        
+        
+        [self.virtualKeyboard setFrame:r];
+        [window addSubview: self.virtualKeyboard];
+        
+        __block __typeof(self) weakSelf = self;
+        
+        [UIView animateWithDuration:0.3f animations:^{
+            
+            if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+                r.origin.y = y1;
+            } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+                r.origin.x = x1;
+            } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+                r.origin.x = x1;
+                
+            } else  { //UIInterfaceOrientationPortraitUpsideDown
+                r.origin.y = y1;
+            }
+            
+            [weakSelf.virtualKeyboard setFrame:r];
+        } completion:^(BOOL finished) {
+            
+            [self virtualkeyboardDidShow];
+        }];
+        
+        CGRect tr = r;
+        
+        if ( UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ) {
+            CGFloat h = tr.size.height;
+            tr.size.height = tr.size.width;
+            tr.size.width = h;
+        }
+        [self needShowVirtualKeyboard:tr.size];
+        
+        self.isVKeyboardShow = YES;
+    }
+}
+
+- (void) showVirtualKeyboard{
+    if (([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending)) {
+        [self showVirtualKeyboard4iOS8Befor];
+    } else {
+        [self showVirtualKeyboard4iOS8Later];
+    }
     
 }
 
-- (void) dissmisVirtualKeyboard{
+
+- (void) dissmisVirtualKeyboard4iOS8Befor{
+    if (self.isVKeyboardShow == NO) {
+        return;
+    }
+    
+    [self virtualkeyboardWillDissmis];
+    
+    __block CGRect r = [self getVirtualKeyboardFrame];
+    CGRect rc = [[UIScreen mainScreen] bounds];
+    UIInterfaceOrientation toInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    CGFloat y1 = 0,  y2 = 0;
+    CGFloat x1 = 0,  x2 = 0;
+    
+    if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+        CGAffineTransform at = CGAffineTransformMakeRotation(M_PI);
+        [self.virtualKeyboard setTransform:at];
+        
+        y1 = r.origin.y;
+        y2 = rc.size.height;
+        r.origin.y = y1;
+    } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+        CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI/2);
+        [self.virtualKeyboard setTransform:at];
+        
+        x1 = r.origin.x;
+        x2 = rc.size.width;
+        r.origin.x = x1;
+        
+    } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+        CGAffineTransform at = CGAffineTransformMakeRotation(M_PI/2);
+        [self.virtualKeyboard setTransform:at];
+        
+        x1 = r.origin.x;
+        x2 = 0 - rc.size.width;
+        r.origin.x = x1;
+        
+    } else  { //UIInterfaceOrientationPortraitUpsideDown
+        CGAffineTransform at = CGAffineTransformMakeRotation(-M_PI);
+        [self.virtualKeyboard setTransform:at];
+        
+        y1 = r.origin.y;
+        y2 = 0 - r.size.height;
+        r.origin.y = y1;
+    }
+    
+    
+    [self.virtualKeyboard setFrame:r];
+    
+    __block __typeof(self) weakSelf = self;
+    
+    [UIView animateWithDuration:0.3f animations:^{
+        
+        if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+            r.origin.y = y2;
+        } else if ( toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ) {
+            r.origin.x = x2;
+        } else if ( toInterfaceOrientation ==  UIInterfaceOrientationLandscapeRight ) {
+            r.origin.x = x2;
+            
+        } else  { //UIInterfaceOrientationPortraitUpsideDown
+            r.origin.y = y2;
+        }
+        [weakSelf.virtualKeyboard setFrame:r];
+        
+    } completion:^(BOOL finished) {
+        
+        [self.virtualKeyboard removeFromSuperview];
+        [self virtualkeyboardDidDissmis];
+    }];
+    
+    
+    
+    
+    [self needHideVirtualKeyboard];
+    
+    self.isVKeyboardShow = NO;
+}
+
+- (void)dissmisVirtualKeyboard4iOS8Later{
     if (self.isVKeyboardShow == NO) {
         return;
     }
@@ -908,12 +1191,20 @@
     } completion:^(BOOL finished) {
         
         [self.virtualKeyboard removeFromSuperview];
-        [self virtualkeyboardWillDissmis];
+        [self virtualkeyboardDidDissmis];
     }];
     
     [self needHideVirtualKeyboard];
     
     self.isVKeyboardShow = NO;
+}
+
+- (void) dissmisVirtualKeyboard{
+    if (([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending)) {
+        [self dissmisVirtualKeyboard4iOS8Befor];
+    } else {
+        [self dissmisVirtualKeyboard4iOS8Later];
+    }
 }
 
 
@@ -1543,31 +1834,48 @@
 // iOS7 only
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_7_1
-    if (![self respondsToSelector:@selector(willTransitionToTraitCollection:withTransitionCoordinator:)]) {
-#endif
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+//    if (![self respondsToSelector:@selector(willTransitionToTraitCollection:withTransitionCoordinator:)]) {
+//#endif
+    if (([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending)) {
         [self prepareForInterfaceRotation];
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_7_1
+        [self retateVirtualKeyboardToInterfaceOrientation:toInterfaceOrientation];
+        
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
     }
-#endif
+//#endif
 }
 
+
+
 // iOS8 only
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_7_0
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [self prepareForInterfaceRotation];
+    
+    UIInterfaceOrientation toInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    [self retateVirtualKeyboardToInterfaceOrientation:toInterfaceOrientation];
 }
-#endif
+//#endif
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAll;
+//    return UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
-- (BOOL)shouldAutorotate
-{
-    return YES;
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+// Returns interface orientation masks.
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+    return (toInterfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 

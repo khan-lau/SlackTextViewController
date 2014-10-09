@@ -129,14 +129,21 @@ static NSString *AutoCompletionCellIdentifier = @"AutoCompletionCell";
 
 - (void)fillWithText:(id)sender
 {
-    if (self.textView.text.length == 0)
-    {
-        int sentences = (arc4random() % 4);
-        if (sentences <= 1) sentences = 1;
-        self.textView.text = [LoremIpsum sentencesWithNumber:sentences];
-    }
-    else {
-        [self.textView slk_insertTextAtCaretRange:[NSString stringWithFormat:@" %@", [LoremIpsum word]]];
+//    if (self.textView.text.length == 0)
+//    {
+//        int sentences = (arc4random() % 4);
+//        if (sentences <= 1) sentences = 1;
+//        self.textView.text = [LoremIpsum sentencesWithNumber:sentences];
+//    }
+//    else {
+//        [self.textView slk_insertTextAtCaretRange:[NSString stringWithFormat:@" %@", [LoremIpsum word]]];
+//    }
+    
+    
+    if (self.isVKeyboardShow) {
+        CGRect r = self.virtualKeyboard.frame;
+        r.origin.y = r.origin.y + 10;
+        self.virtualKeyboard.frame = r;
     }
 }
 
