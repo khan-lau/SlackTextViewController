@@ -44,6 +44,16 @@ NSString * const SLKTextViewDidShakeNotification = @"com.slack.TextViewControlle
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+
 - (void)commonInit
 {
     self.placeholderColor = [UIColor lightGrayColor];
