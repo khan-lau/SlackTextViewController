@@ -901,7 +901,7 @@
 
 
 /////// by khan
-- (void) retateVirtualKeyboardToInterfaceOrientation7:(UIInterfaceOrientation)toInterfaceOrientation{
+- (void) retateVirtualKeyboardToInterfaceOrientation7:(UIInterfaceOrientation)toInterfaceOrientation  duration:(NSTimeInterval)duration{
     //先判断是否有效转向
     if( UIDeviceOrientationIsValidInterfaceOrientation( toInterfaceOrientation ) ) {
         
@@ -911,7 +911,7 @@
 //            CGRect r = rc;
 
 //            int status_height = isStatusBarHidden ? 0 : 20;
-        CGFloat duration = 0.485;
+//        CGFloat duration = 0.485;
         if (toInterfaceOrientation == UIInterfaceOrientationPortrait) {
             
             CGRect r = [self getVirtualKeyboardFrameFromInterfaceOrientation:toInterfaceOrientation];
@@ -1915,7 +1915,7 @@
 //#endif
     if (([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending)) {
         [self prepareForInterfaceRotation];
-        [self retateVirtualKeyboardToInterfaceOrientation7:toInterfaceOrientation];
+        [self retateVirtualKeyboardToInterfaceOrientation7:toInterfaceOrientation duration:(NSTimeInterval)duration];
         
 //#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
     }
